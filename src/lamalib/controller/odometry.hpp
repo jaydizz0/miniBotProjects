@@ -23,7 +23,7 @@ struct OdomValues {
 struct Encoders {
     std::shared_ptr<Encoder> left;
     std::shared_ptr<Encoder> right;
-    std::shared_ptr<Encoder> rear;
+    //std::shared_ptr<Encoder> rear;
 
 	int tpr = left->getTicksPerRotation();
 };
@@ -67,7 +67,7 @@ struct EncoderTicks {
 class Odometry {
 	Pose pose {0, 0, 0, 0};
 
-	Encoders encoders {nullptr, nullptr, nullptr};
+	Encoders encoders {nullptr, nullptr};
 	EncoderScales scales {0, 0, 0, 0, 0, 0};
 
 	bool usingInertial {false};

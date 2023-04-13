@@ -19,6 +19,9 @@ class Inline : public Chassis{
      */
     void move(double forward, double turn);
 
+    
+    void moveA(double forward, double turn);
+
     /**
 	 * @brief Drive the robot with a tank style
 	 * 
@@ -47,6 +50,7 @@ class Inline : public Chassis{
 	 * @param points Starting velocity and ending velocities; used for cutoff; velocities are in the unit the wheel diameter is in per second.
 	 */
     void moveDistance(double dist, std::vector<MotionPoint> points) override;
+    void moveDistance(vector<MotionPoint> points, PIDGains pid);
 
     /**
      * @brief Turns the robot relative to the starting heading at the beginning of the program
@@ -114,5 +118,6 @@ class Inline : public Chassis{
     private:
     MotorGroup leftMotors;
     MotorGroup rightMotors;
+    double targetTheta = 0;
 };
 } // namespace lamaLib
