@@ -1,6 +1,9 @@
 #include "main.h"
 #include "lamalib/lamaapi.hpp"
 
+lamaLib::Motor leftFront(10);
+lamaLib::Motor rightFront(11);
+lamaLib::Inline chassis = lamaLib::Inline({leftFront}, {rightFront}, {2.77, {okapi::AbstractMotor::gearset::green, 1}});
 /**
  * A callback function for LLEMU's center button.
  *
@@ -11,7 +14,7 @@ void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
+		autonomous();
 	} else {
 		pros::lcd::clear_line(2);
 	}
@@ -59,7 +62,11 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	chassis.withOdometry({5.252,5.252,0,2.77,2.77,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
+	chassis.moveDistance({{{10, 5}, 20}}, {0.001, 0, 0});
+	chassis.turnAbsolute(360, 10, {0.001, 0, 0});chassis.turnRelative(90, 10, {0.001, 0, 0});
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -76,16 +83,15 @@ void autonomous() {}
  */
 void opcontrol() {
 	lamaLib::Controller master;
-	lamaLib::Motor left_mtr(1);
-	lamaLib::Motor right_mtr(2);
-
+	lamaLib::Motor left_mtr(10);
+	lamaLib::Motor right_mtr(11);
+	//chassis.withOdometry({5.252,5.252,0,2.77,2.77,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
+	//lamaLib::Inline chasis = lamaLib::Inline({left_mtr}, {right_mtr}, {2.77, {okapi::AbstractMotor::gearset::green,1}});
 	while (true) {
-		int left = master.getAnalog(okapi::ControllerAnalog::leftY);
-		int right = master.getAnalog(okapi::ControllerAnalog::rightY);
-
-		left_mtr.moveVelocity(left);
-		right_mtr.moveVelocity(right);
-
+		//double left = master.getAnalog(okapi::ControllerAnalog::leftY);
+		// double right = master.getAnalog(okapi::ControllerAnalog::rightY);
+		// chassis.arcade(left,right);
 		pros::delay(20);
 	}
 }
+
