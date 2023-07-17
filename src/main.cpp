@@ -1,15 +1,13 @@
 #include "main.h"
 #include "lamalib/lamaapi.hpp"
 
+
 lamaLib::Motor leftFront(10);
-lamaLib::Motor rightFront(11);
-lamaLib::Inline chassis = lamaLib::Inline({leftFront}, {rightFront}, {2.77, {okapi::AbstractMotor::gearset::green, 1}});
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
+lamaLib::Motor rightFront(-11);
+
+lamaLib::Inline chassis = lamaLib::Inline({leftFront}, {rightFront}, {3.3, {okapi::AbstractMotor::gearset::green, 1}});
+
+
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
@@ -20,78 +18,41 @@ void on_center_button() {
 	}
 }
 
-/**
- * Runs initialization code. This occurs as soon as the program is started.
- *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
- */
+
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
+
 void disabled() {}
 
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
+
 void competition_initialize() {}
 
-/**
- * Runs the user autonomous code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
- * mode. Alternatively, this function may be called in initialize or opcontrol
- * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
- */
+
+
 void autonomous() {
-	chassis.withOdometry({5.252,5.252,0,2.77,2.77,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
-	chassis.moveDistance({{{10, 5}, 20}}, {0.001, 0, 0});
-	chassis.turnAbsolute(360, 10, {0.001, 0, 0});chassis.turnRelative(90, 10, {0.001, 0, 0});
+	chassis.withOdometry({3.5,3.5,0,3.3,3.3,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
+	for(int i =0; i < 4; i++){
+		chassis.moveDistance({{{10.0, 10.0}, 10}},{0.035,0,0});
+		pros::delay(1000);
+		chassis.turnRelative(90.0, 10.0, {0.035, 0, 0}); 
+		pros::delay(1000);
+	}
+	
 }
 
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
+
 void opcontrol() {
-	lamaLib::Controller master;
-	lamaLib::Motor left_mtr(10);
-	lamaLib::Motor right_mtr(11);
-	//chassis.withOdometry({5.252,5.252,0,2.77,2.77,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
-	//lamaLib::Inline chasis = lamaLib::Inline({left_mtr}, {right_mtr}, {2.77, {okapi::AbstractMotor::gearset::green,1}});
+	pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+	Chassis controlChassis = Chassis(leftFront,rightFront);
 	while (true) {
-		//double left = master.getAnalog(okapi::ControllerAnalog::leftY);
-		// double right = master.getAnalog(okapi::ControllerAnalog::rightY);
-		// chassis.arcade(left,right);
+		int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		controlChassis.arcade(leftY,rightX);
 		pros::delay(20);
-	}
+ 	}
 }
 

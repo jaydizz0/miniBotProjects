@@ -19,10 +19,15 @@
 
 #include "subsystems/chassismodels/inline.hpp"
 #include "subsystems/chassismodels/mecanum.hpp"
+#include "subsystems/chassismodels/chassis.hpp"
+
 
 #include "subsystems/flywheel.hpp"
 #include "subsystems/fourbar.hpp"
 #include "subsystems/catapult.hpp"
+
+#include "subsystems/Chassis.hpp"
+
 
 #include "display/autoSelector.hpp"
 
