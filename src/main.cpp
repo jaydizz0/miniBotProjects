@@ -33,26 +33,33 @@ void competition_initialize() {}
 
 
 void autonomous() {
-	chassis.withOdometry({3.5,3.5,0,3.3,3.3,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
-	for(int i =0; i < 4; i++){
-		chassis.moveDistance({{{10.0, 10.0}, 10}},{0.035,0,0});
-		pros::delay(1000);
-		chassis.turnRelative(90.0, 10.0, {0.035, 0, 0}); 
-		pros::delay(1000);
-	}
-	
+    pros::ADIUltrasonic ultrasonicSensor(1, 2);
+    int stopDistance = 20;
+
+    while (true) {
+        int distance = ultrasonicSensor.get_value();
+
+        if (distance <= stopDistance) {
+            chassis.move(0, 0);
+            break; 
+        } else {
+            chassis.move(0.5, 0); 
+        }
+
+        pros::delay(10); 
+    }
 }
 
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-	Chassis controlChassis = Chassis(leftFront,rightFront);
-	while (true) {
-		int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		controlChassis.arcade(leftY,rightX);
-		pros::delay(20);
- 	}
+	// Chassis controlChassis = Chassis(leftFront,rightFront);
+	// while (true) {
+	// 	int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	// 	int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+	// 	controlChassis.arcade(leftY,rightX);
+	// 	pros::delay(20);
+ 	// }
 }
 
