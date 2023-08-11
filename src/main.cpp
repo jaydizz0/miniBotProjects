@@ -1,11 +1,9 @@
 #include "main.h"
 #include "lamalib/lamaapi.hpp"
 
-
 lamaLib::Motor leftFront(10);
-lamaLib::Motor rightFront(-11);
-
-lamaLib::Inline chassis = lamaLib::Inline({leftFront}, {rightFront}, {3.3, {okapi::AbstractMotor::gearset::green, 1}});
+lamaLib::Motor rightFront(11);
+lamaLib::Inline chassis = lamaLib::Inline({leftFront}, {rightFront}, {2.77, {okapi::AbstractMotor::gearset::green, 1}});
 
 
 void on_center_button() {
@@ -22,6 +20,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::register_btn1_cb(on_center_button);
+
 }
 
 
@@ -31,35 +30,41 @@ void disabled() {}
 void competition_initialize() {}
 
 
-
 void autonomous() {
-    pros::ADIUltrasonic ultrasonicSensor(1, 2);
-    int stopDistance = 20;
-
-    while (true) {
-        int distance = ultrasonicSensor.get_value();
-
-        if (distance <= stopDistance) {
-            chassis.move(0, 0);
-            break; 
-        } else {
-            chassis.move(0.5, 0); 
-        }
-
-        pros::delay(10); 
-    }
+    chassis.withOdometry({3.5,3.5,0,3.3,3.3,0}, {std::make_shared<lamaLib::Motor>(leftFront),std::make_shared<lamaLib::Motor>(rightFront)});
+    pros::Distance distance_sensor(1);
+    double travel_distance = distance_sensor.get();
+    chassis.moveDistance({{{10.0, 10.0}, travel_distance}},{0.035,0,0});
+    travel_distance *= -1;
+    chassis.moveDistance({{{10.0, 10.0}, travel_distance}},{0.035,0,0});
 }
+
 
 
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
+    // lamaLib::Motor myMotor(10, false, okapi::AbstractMotor::gearset::blue, okapi::AbstractMotor::encoderUnits::degrees);
 
-	// Chassis controlChassis = Chassis(leftFront,rightFront);
-	// while (true) {
-	// 	int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-	// 	int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-	// 	controlChassis.arcade(leftY,rightX);
-	// 	pros::delay(20);
- 	// }
+    pros::Controller master(pros::E_CONTROLLER_MASTER);
+    // while (true) {
+    //     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+    //         myMotor.moveVelocity(200);
+    //     } 
+    //     else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+    //         myMotor.moveVelocity(400);
+    //     } 
+    //     else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+    //         myMotor.moveVelocity(600);
+    //     } 
+    //     else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+    //         myMotor.moveVelocity(0);
+    //     }
+        
+    
+    //     pros::delay(20);
+    //}
 }
+
+
+
+
 

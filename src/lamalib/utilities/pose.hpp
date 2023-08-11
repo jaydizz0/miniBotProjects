@@ -14,7 +14,7 @@ struct Pose {
 	double x;
 	double y;
 	double theta;
-	uint time;
+	int time;
 
 	/**
 	* @brief Finds the distance between 2 points
